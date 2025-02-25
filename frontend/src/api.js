@@ -1,10 +1,11 @@
-// Adjust the baseURL below to point to your deployed backend
-const baseURL = "plankton-app-ht33g.ondigitalocean.app";
 const API_BASE_URL = "https://plankton-app-ht33g.ondigitalocean.app";
 
 export async function fetchTopStocks() {
   try {
-    const response = await fetch(`${baseURL}/stocks`);
+    const response = await fetch(`${API_BASE_URL}/stocks`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const data = await response.json();
     return data;
   } catch (error) {
