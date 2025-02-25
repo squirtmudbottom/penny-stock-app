@@ -1,10 +1,20 @@
 import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 import sqlite3
 from datetime import datetime
 
 app = FastAPI()
+
+# Allow frontend to access backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to your frontend's domain in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Setup database if it doesn't exist
 def setup_db():
@@ -72,13 +82,18 @@ def get_stock_data(symbol):
                 "sentiment": sentiment,
                 "recommendation": recommendation
             }
+        else:
+            print(f"Error: Unexpected response structure for {symbol} - {data}")
+    else:
+        print(f"Error fetching data for {symbol}: {response.status_code}")
+    
     return {"error": f"Failed to fetch data for {symbol}"}
 
 @app.get("/")
 def read_root():
     return {"message": "Hello, Penny Stock Research API is running!"}
 
-@app.get("/top-stocks")
+@app.get("/stocks")  # Updated route from /top-stocks to /stocks
 def fetch_top_stocks():
     stock_symbols = ["AAPL", "TSLA", "AMZN"]
     results = []
