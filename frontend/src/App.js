@@ -1,5 +1,6 @@
+// App.js
 import React, { useEffect, useState } from "react";
-import { fetchTopStocks } from "./api"; // <-- Import from api.js
+import { fetchTopStocks } from "./api"; // <--- Import from api.js
 import "./styles.css";
 
 function App() {
