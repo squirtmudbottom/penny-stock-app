@@ -1,15 +1,16 @@
-const API_BASE_URL = "https://plankton-app-ht33g.ondigitalocean.app";
+// Adjust BASE_URL to your deployed backend
+const BASE_URL = "https://plankton-app-ht33g.ondigitalocean.app/";
 
-export async function fetchTopStocks() {
+export async function fetchPennyStocks() {
   try {
-    const response = await fetch(`${API_BASE_URL}/stocks`);
+    const response = await fetch(`${BASE_URL}/penny-stocks`);
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
     const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching top stocks:", error);
+    return data; // { top_stocks: [...], best_pick: {...} }
+  } catch (err) {
+    console.error("Failed to fetch penny stocks:", err);
     return null;
   }
 }
