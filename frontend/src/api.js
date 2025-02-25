@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { fetchPennyStocks } from "./api";
 import "./styles.css";
+
+// Define fetchPennyStocks right here
+async function fetchPennyStocks() {
+  const baseURL = "https://plankton-app-ht33g.ondigitalocean.app";
+  try {
+    // Call the /penny-stocks route directly
+    const response = await fetch(`${baseURL}/penny-stocks`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data; // { top_stocks: [...], best_pick: {...} }
+  } catch (error) {
+    console.error("Error fetching penny stocks:", error);
+    return null;
+  }
+}
 
 function App() {
   const [topStocks, setTopStocks] = useState([]);
