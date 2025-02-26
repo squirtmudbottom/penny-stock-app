@@ -3,28 +3,43 @@ import React, { useEffect, useState } from "react";
 import { fetchTopStocks } from "./api";
 import "./styles.css";
 
-// Array of fun images (replace URLs with your own hosted images)
+// Array of fun images
 const funImages = [
-  "https://i.imgur.com/doMt0IZ.jpeg", // e.g. "Ben Franklin wearing sunglasses"
-  "https://i.imgur.com/jIkKjYh.jpg", // e.g. "Bear behind wild stock market"
-  "https://i.imgur.com/P4rDs7k.jpg", // e.g. "Funny bull in sunglasses"
-  "https://i.imgur.com/WG2XX0n.jpg", // or any other stock-themed silly images
+  "https://i.imgur.com/doMt0IZ.jpeg",
+  "https://i.imgur.com/jIkKjYh.jpg",
+  "https://i.imgur.com/P4rDs7k.jpg",
+  "https://i.imgur.com/WG2XX0n.jpg",
   "https://i.imgur.com/hqqAmS7.jpg",
   "https://i.imgur.com/3FMbUXp.jpg",
 ];
 
-// Helper to pick an image once per day
+// Helper for daily image
 function getDailyImage() {
-  // For uniqueness, use day of the year (1-365)
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   const diff = now - start;
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
-
-  // Use dayOfYear mod the number of images
   const index = dayOfYear % funImages.length;
   return funImages[index];
+}
+
+// Emojis for sentiment
+function getSentimentEmoji(sentiment) {
+  switch (sentiment) {
+    case "Bullish":
+      return "🚀";
+    case "Bearish":
+      return "🐻";
+    case "Positive":
+      return "💹";
+    case "Neutral":
+      return "😐";
+    case "Negative":
+      return "⚠️";
+    default:
+      return "❓";
+  }
 }
 
 function App() {
@@ -43,7 +58,7 @@ function App() {
         setLastFetch(new Date().toLocaleString());
       }
       setLoading(false);
-      setDailyImage(getDailyImage()); // pick the fun graphic for today
+      setDailyImage(getDailyImage());
     }
     loadStocks();
   }, []);
@@ -74,15 +89,13 @@ function App() {
       {bestPick && (
         <div className="highlight-card">
           <h2>Best Pick of the Day</h2>
-          {/* Pass the dailyImage into the StockCard */}
-          <StockCard stock={bestPick} dailyImage={dailyImage} />
+          {/* We pass dailyImage to show in this card */}
+          <StockCard stock={bestPick} dailyImage={dailyImage} bestPick />
         </div>
       )}
 
       <div className="stock-grid">
         {topStocks.map((stock, i) => (
-          // For normal stocks, we won't pass dailyImage
-          // but if you want the daily image in *all* stocks, pass dailyImage here too
           <StockCard key={i} stock={stock} />
         ))}
       </div>
@@ -100,25 +113,49 @@ function App() {
   );
 }
 
-function StockCard({ stock, dailyImage }) {
+function StockCard({ stock, dailyImage, bestPick }) {
+  // For fun, add emojis to sentiment or certain fields
+  const sentimentEmoji = getSentimentEmoji(stock.sentiment);
+
+  // If you like, add emojis to volume or price:
+  // e.g. volume => '💥'
+  // e.g. price => '💵'
   return (
-    <div className="stock-card">
-      {/* If dailyImage prop is passed, display it in the card */}
+    <div
+      className="stock-card"
+      style={{
+        // For the best pick, scale similarly to others but allow enough space
+        maxWidth: bestPick ? "400px" : "250px",
+      }}
+    >
+      {/* If dailyImage prop is passed, display it */}
       {dailyImage && (
         <div className="fun-graphic">
           <img
             src={dailyImage}
             alt="Fun Stock Graphic"
-            style={{ maxWidth: "300px", marginBottom: "1rem" }}
+            style={{ maxWidth: "100%", marginBottom: "1rem", borderRadius: "8px" }}
           />
         </div>
       )}
 
       <h3>{stock.symbol}</h3>
-      <p>Price: ${stock.price.toFixed(2)}</p>
-      <p>Volume: {stock.volume.toLocaleString()}</p>
-      <p>Score: {stock.score}</p>
-      <p>Sentiment: {stock.sentiment}</p>
+      <p>
+        Price: ${stock.price.toFixed(2)} <span role="img" aria-label="money">
+          💵
+        </span>
+      </p>
+      <p>
+        Volume: {stock.volume.toLocaleString()} <span role="img" aria-label="explode">
+          💥
+        </span>
+      </p>
+      <p>
+        Score: {stock.score} {stock.score > 2 ? "🎉" : ""}
+      </p>
+      <p>
+        Sentiment: {stock.sentiment} {sentimentEmoji}
+      </p>
       <p>Recommendation: {stock.recommendation}</p>
     </div>
   );
