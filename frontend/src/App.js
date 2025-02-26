@@ -74,21 +74,15 @@ function App() {
       {bestPick && (
         <div className="highlight-card">
           <h2>Best Pick of the Day</h2>
-          <StockCard stock={bestPick} />
-          {dailyImage && (
-            <div className="fun-graphic">
-              <img
-                src={dailyImage}
-                alt="Fun Stock Graphic"
-                style={{ maxWidth: "300px", marginTop: "1rem" }}
-              />
-            </div>
-          )}
+          {/* Pass the dailyImage into the StockCard */}
+          <StockCard stock={bestPick} dailyImage={dailyImage} />
         </div>
       )}
 
       <div className="stock-grid">
         {topStocks.map((stock, i) => (
+          // For normal stocks, we won't pass dailyImage
+          // but if you want the daily image in *all* stocks, pass dailyImage here too
           <StockCard key={i} stock={stock} />
         ))}
       </div>
@@ -106,9 +100,20 @@ function App() {
   );
 }
 
-function StockCard({ stock }) {
+function StockCard({ stock, dailyImage }) {
   return (
     <div className="stock-card">
+      {/* If dailyImage prop is passed, display it in the card */}
+      {dailyImage && (
+        <div className="fun-graphic">
+          <img
+            src={dailyImage}
+            alt="Fun Stock Graphic"
+            style={{ maxWidth: "300px", marginBottom: "1rem" }}
+          />
+        </div>
+      )}
+
       <h3>{stock.symbol}</h3>
       <p>Price: ${stock.price.toFixed(2)}</p>
       <p>Volume: {stock.volume.toLocaleString()}</p>
